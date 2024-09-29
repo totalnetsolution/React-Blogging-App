@@ -4,29 +4,26 @@ import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await signInWithEmailAndPassword(auth, formData.email, formData.password);
+      await signInWithEmailAndPassword(auth, email, password);
       navigate('/dashboard');
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
     }
   };
 
   return (
     <div className="container mt-5">
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
-        <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" required />
+      <h2>Login</h2> <br /> <br />
+      <form onSubmit={handleLogin}> 
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required /> <br /> <br />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required /> <br /> <br />
         <button type="submit" className="btn btn-primary">Login</button>
       </form>
     </div>

@@ -1,35 +1,78 @@
+// src/components/Profile/Profile.jsx
 import { useState } from 'react';
 import { auth } from '../../firebase';
 import { updateProfile, updatePassword } from 'firebase/auth';
 
-const Profile = ({ user }) => {
-  const [firstName, setFirstName] = useState(user.displayName.split(' ')[0]);
-  const [lastName, setLastName] = useState(user.displayName.split(' ')[1]);
+const Profile = () => {
+  const currentUser = auth.currentUser;
+  const [firstName, setFirstName] = useState(currentUser?.displayName?.split(' ')[0] || '');
+  const [lastName, setLastName] = useState(currentUser?.displayName?.split(' ')[1] || '');
   const [newPassword, setNewPassword] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleUpdate = async () => {
-    await updateProfile(user, { displayName: `${firstName} ${lastName}` });
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      await updateProfile(currentUser, { displayName: `${firstName} ${lastName}` });
+      setMessage('Profile updated successfully');
+    } catch (error) {
+      setMessage(`Error updating profile: ${error.message}`);
+    }
+  };
+
+  const handlePasswordUpdate = async (e) => {
+    e.preventDefault();
     if (newPassword) {
-      await updatePassword(user, newPassword);
+      try {
+        await updatePassword(currentUser, newPassword);
+        setMessage('Password updated successfully');
+      } catch (error) {
+        setMessage(`Error updating password: ${error.message}`);
+      }
+    } else {
+      setMessage('Please enter a new password');
     }
   };
 
   return (
     <div className="container mt-5">
       <h2>Profile</h2>
-      <div>
-        <label>First Name</label>
-        <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-      </div>
-      <div>
-        <label>Last Name</label>
-        <input type="text" value={lastName} onChange={(e) => setLastName(e.target.value)} />
-      </div>
-      <div>
-        <label>New Password</label>
-        <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
-      </div>
-      <button onClick={handleUpdate} className="btn btn-primary">Update</button>
+      {message && <p>{message}</p>}
+      <form onSubmit={handleProfileUpdate}>
+        <div className="mb-3">
+          <label>First Name</label>
+          <input
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            className="form-control"
+            required
+          />
+        </div>
+        <div className="mb-3">
+          <label>Last Name</label>
+          <input
+            type="text"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            className="form-control"
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">Update Profile</button>
+      </form>
+      <form onSubmit={handlePasswordUpdate} className="mt-4">
+        <div className="mb-3">
+          <label>New Password</label>
+          <input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            className="form-control"
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">Update Password</button>
+      </form>
     </div>
   );
 };

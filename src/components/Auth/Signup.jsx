@@ -1,46 +1,31 @@
 import { useState } from 'react';
-import { auth } from '../../firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '../../firebase';
 import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
-  const [formData, setFormData] = useState({ email: '', password: '', confirmPassword: '', firstName: '', lastName: '' });
+  const [formData, setFormData] = useState({ email: '', password: '', firstName: '', lastName: '' });
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
-      return;
-    }
-    if (formData.firstName.length < 3 || formData.lastName.length < 1) {
-      alert("First name must be at least 3 characters and last name 1 character.");
-      return;
-    }
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      await updateProfile(userCredential.user, {
-        displayName: `${formData.firstName} ${formData.lastName}`,
-      });
+      await updateProfile(userCredential.user, { displayName: `${formData.firstName} ${formData.lastName}` });
       navigate('/dashboard');
     } catch (error) {
-      console.error(error);
+      console.error(error.message);
     }
   };
 
   return (
     <div className="container mt-5">
-      <h2>Sign Up</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} placeholder="First Name" minLength="3" maxLength="20" required />
-        <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} placeholder="Last Name" minLength="1" maxLength="20" required />
-        <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Email" required />
-        <input type="password" name="password" value={formData.password} onChange={handleChange} placeholder="Password" minLength="8" required />
-        <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange} placeholder="Confirm Password" required />
+      <h2>Sign Up</h2> <br /> <br />
+      <form onSubmit={handleSignup}>
+        <input type="text" placeholder="First Name" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} required /> <br /> <br />
+        <input type="text" placeholder="Last Name" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} required /> <br /> <br />
+        <input type="email" placeholder="Email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required /> <br /> <br />
+        <input type="password" placeholder="Password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} required /> <br /> <br />
         <button type="submit" className="btn btn-primary">Sign Up</button>
       </form>
     </div>
