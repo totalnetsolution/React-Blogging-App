@@ -1,4 +1,3 @@
-// src/components/Layout/Navbar.jsx
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { auth } from '../../firebase';
@@ -14,7 +13,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light">
+    <nav className="navbar navbar-expand-lg navbar-light bg-info">
       <div className="container">
         <Link to="/" className="navbar-brand">Blog Platform</Link>
         <div className="collapse navbar-collapse">
@@ -23,6 +22,9 @@ const Navbar = () => {
               <>
                 <li className="nav-item"> <br />
                   <span className="navbar-text">Welcome, {currentUser.displayName}</span> <br /> <br />
+                </li>
+                <li className="nav-item">
+                  <Link to="/create-post" className="nav-link">Create Post</Link>
                 </li>
                 <li className="nav-item">
                   <Link to="/dashboard" className="nav-link">Dashboard</Link>
